@@ -8,5 +8,9 @@ A TypeScript first, SSR capable, backend+frontend framework: a bare next.js.
 
 * Serve static SEO-friendly content alongside interactive front-end SPAs
 * One single deployable application, trivially containerized, trivially deployed anywhere
-* A single file-based router with minimal coupling
-* Front-end and back-end technology agnostic: no heavy-weight laundry list of features, just what you need to get deployed and executing as fast as possible
+* A simple file-based router with minimal coupling
+* Front-end and back-end technology agnostic: no laundry list of features
+
+Dex.ts was designed after many iterations and technologies across a myriad of fast-paced startup projects.
+
+Its primary aim is to be just what you need to get deployed and executing as fast as possible, with minimal baggage.
