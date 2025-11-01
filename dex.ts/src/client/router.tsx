@@ -1,7 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-console.log("Router loaded", import.meta.env.DEV);
-
 // Any page component type
 export type Page = React.FC;
 
@@ -49,23 +47,7 @@ export function useRouteComponent(): React.ReactElement | null {
   return route ? React.createElement(route.component) : <h1>404</h1>;
 }
 
-// Link helper (client nav)
-export const Link: React.FC<React.PropsWithChildren<{ to: string }>> = ({
-  to,
-  children,
-}) => {
-  return (
-    <a
-      href={to}
-      onClick={(e) => {
-        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0)
-          return;
-        e.preventDefault();
-        history.pushState(null, "", to);
-        window.dispatchEvent(new PopStateEvent("popstate"));
-      }}
-    >
-      {children}
-    </a>
-  );
-};
+export function navigate(path: string) {
+  history.pushState(null, "", path);
+  window.dispatchEvent(new PopStateEvent("popstate"));
+}

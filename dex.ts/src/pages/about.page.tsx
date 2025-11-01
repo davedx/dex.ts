@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Page } from "../client/router";
-import { Layout } from "../client/layout";
+import { Page } from "../client/router.js";
+import { Layout } from "../shared/layout.js";
 
 export const ssr = true;
-// no ssr export => CSR only
+
 const About: Page = () => {
   const [count, setCount] = useState(0);
 

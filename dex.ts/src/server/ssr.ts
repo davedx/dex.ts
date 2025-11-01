@@ -1,8 +1,5 @@
-import type { Page } from "../client/router";
 import React from "react";
 import { renderToString } from "react-dom/server";
-
-export type PageModule = { default: Page; ssr?: boolean };
 
 export function fileToRoute2(file: string) {
   const rel = file.replaceAll("\\", "/");
@@ -33,7 +30,7 @@ export function fileToRoute(file: string) {
   return route;
 }
 
-export async function renderPage(Component: Page) {
+export async function renderPage(Component: React.FC) {
   const html = renderToString(React.createElement(Component));
   return html;
 }

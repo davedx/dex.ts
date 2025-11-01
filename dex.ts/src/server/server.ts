@@ -8,7 +8,7 @@ import fg from "fast-glob";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProd = process.env.NODE_ENV === "production";
 
-async function createServer() {
+export async function createDexServer() {
   const app = express();
   let vite: any = null;
 
@@ -83,7 +83,6 @@ async function createServer() {
       }
 
       // --- PROD SSR ---
-      console.log(`__dirname: ${__dirname}`);
       const serverPagesDir = path.resolve(__dirname, "../pages");
       const files = fs.existsSync(serverPagesDir)
         ? await fg("**/*.page.js", { cwd: serverPagesDir, absolute: true })
@@ -91,9 +90,6 @@ async function createServer() {
 
       for (const abs of files) {
         const route = fileToRoute2(abs);
-        console.log(
-          `comparing abs ${abs} route ${route} to urlPath ${urlPath}`
-        );
         if (route === urlPath) {
           const mod = await import(abs);
           const Page = mod.default;
@@ -137,4 +133,4 @@ async function createServer() {
   );
 }
 
-createServer();
+//createServer();

@@ -1,4 +1,4 @@
-import { Link } from "./router";
+import { Link } from "dex.ts/client";
 
 type Props = {
   children: React.ReactNode;
@@ -8,8 +8,8 @@ export function Layout({ children }: Props) {
   return (
     <>
       <nav style={{ display: "flex", gap: 12 }}>
-        <Link to="/">Home</Link>
-        <Link to="/about">About</Link>
+        <Link href="/">Home</Link>
+        <Link href="/about">About</Link>
       </nav>
       <main>{children}</main>
     </>

@@ -1,5 +1,5 @@
-import { Layout } from "../client/layout";
-import { Page } from "../client/router";
+import { Layout } from "../shared/layout.js";
+import { Page } from "../client/router.js";
 
 export const ssr = true;
 
