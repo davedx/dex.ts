@@ -158,6 +158,8 @@ export async function createDexServer() {
           const route = fileToRoute2(abs);
           if (route === urlPath) {
             const mod = await import(abs);
+            console.log("SSR check:", abs, Object.keys(mod), mod.ssr);
+
             matched = true;
 
             if (mod.ssr) {
@@ -183,11 +185,8 @@ export async function createDexServer() {
         }
 
         if (!matched) {
-          // Fallback: serve HTML shell + routes (client will show 404)
-          html = prodTemplate!.replace(
-            "</body>",
-            `<script>window.__DEX_ROUTES__ = ${routesJson};</script></body>`
-          );
+          res.status(404).type("html").end("<div>404 Not Found</div>");
+          return;
         }
       }
 

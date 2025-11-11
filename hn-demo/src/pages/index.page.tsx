@@ -1,7 +1,7 @@
 import { Page } from "dex.ts/client";
 import { Layout } from "../shared/layout.js";
 
-export const ssr = false;
+export const ssr = true;
 
 const Home: Page = () => (
   <Layout>
