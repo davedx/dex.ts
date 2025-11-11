@@ -1,53 +1,55 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-// Any page component type
 export type Page = React.FC;
+export type Loader = () => Promise<{ default: Page; ssr?: boolean }>;
 
-// Eagerly import page modules for fast dev HMR (can switch to lazy if desired)
-const modules = import.meta.glob("../pages/**/*.page.tsx", {
-  eager: true,
-}) as Record<string, { default: Page; ssr?: boolean }>;
+let dynamicModules: Record<string, Loader> = {};
 
-// Build route table once
-function normalizePath(file: string) {
-  // ../pages/index.page.tsx -> /
-  // ../pages/about.page.tsx -> /about
-  const p = file
-    .replace("../pages", "")
-    .replace(/\.page\.(t|j)sx?$/, "")
-    .replace(/\/index$/, "/");
-  return p === "/" ? "/" : p;
+export function setRouteLoaders(loaders: Record<string, Loader>) {
+  dynamicModules = loaders;
 }
 
-export type Route = { path: string; component: Page; ssr: boolean };
+function normalizePath(pathname: string) {
+  if (pathname !== "/" && pathname.endsWith("/")) return pathname.slice(0, -1);
+  return pathname || "/";
+}
 
-export const routes: Route[] = Object.entries(modules).map(([k, mod]) => ({
-  path: normalizePath(k),
-  component: mod.default,
-  ssr: !!mod.ssr,
-}));
-
-// Minimal client-side router (history API)
 export function useRouteComponent(): React.ReactElement | null {
-  const [pathname, setPathname] = useState(() => window.location.pathname);
+  const [pathname, setPathname] = useState(() =>
+    normalizePath(window.location.pathname)
+  );
+  const [Component, setComponent] = useState<Page | null>(null);
 
   useEffect(() => {
-    const onPop = () => setPathname(window.location.pathname);
+    const onPop = () => setPathname(normalizePath(window.location.pathname));
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
   }, []);
 
-  const route = useMemo(
-    () =>
-      routes.find((r) => r.path === pathname) ??
-      routes.find((r) => r.path === "/"),
-    [pathname]
-  );
+  useEffect(() => {
+    const load = async () => {
+      const loader = dynamicModules[pathname] ?? dynamicModules["/"];
+      if (!loader) {
+        setComponent(() => () => <h1>404</h1>);
+        return;
+      }
+      try {
+        const mod = await loader();
+        setComponent(() => mod.default as Page);
+      } catch (err) {
+        console.error("Failed to load page:", err);
+        setComponent(() => () => <h1>404</h1>);
+      }
+    };
+    load();
+  }, [pathname]);
 
-  return route ? React.createElement(route.component) : <h1>404</h1>;
+  return Component ? React.createElement(Component) : null;
 }
 
 export function navigate(path: string) {
-  history.pushState(null, "", path);
+  const p = normalizePath(path);
+  if (p === normalizePath(window.location.pathname)) return;
+  history.pushState(null, "", p);
   window.dispatchEvent(new PopStateEvent("popstate"));
 }

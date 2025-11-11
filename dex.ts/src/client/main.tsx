@@ -10,7 +10,6 @@ declare global {
 // If SSR provided HTML, hydrate; otherwise mount
 const rootEl = document.getElementById("root")!;
 if (window.__SSR_HTML__) {
-  console.log("hydrating root");
   hydrateRoot(rootEl, <App />);
 } else {
   createRoot(rootEl).render(<App />);

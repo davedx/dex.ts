@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "dex dev",
+    "prebuild": "node ../dex.ts/dist/cli/dex-routes.js",
     "build": "vite build && tsc -p tsconfig.json --noEmit false",
     "preview": "NODE_ENV=production node dist/server/server.js"
   },

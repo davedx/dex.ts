@@ -3,10 +3,10 @@ import { Layout } from "../shared/layout.js";
 
 export const ssr = false;
 
-const Home: Page = () => (
+const About: Page = () => (
   <Layout>
-    <h1>Hacker News Demo</h1>
+    <h1>About page</h1>
   </Layout>
 );
 
-export default Home;
+export default About;
