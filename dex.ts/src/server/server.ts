@@ -1,11 +1,10 @@
 import express from "express";
 import path from "node:path";
 import fs from "node:fs";
-import { fileURLToPath } from "node:url";
 import fg from "fast-glob";
 import { renderPage, fileToRoute, fileToRoute2 } from "./ssr.js";
+import { createApiRouter } from "./api-router.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProd = process.env.NODE_ENV === "production";
 const projectRoot = process.cwd();
 
@@ -17,6 +16,8 @@ function normalizeRoutePath(route: string) {
 
 export async function createDexServer() {
   const app = express();
+  app.use(express.json());
+
   let vite: any = null;
 
   // --- Vite setup (dev) or static assets (prod) ---
@@ -38,7 +39,9 @@ export async function createDexServer() {
   }
 
   // --- Simple API example ---
-  app.get("/api/hello", (_, res) => res.json({ ok: true }));
+  //  app.get("/api/hello", (_, res) => res.json({ ok: true }));
+  const apiPath = path.resolve("./src/api");
+  app.use("/api", await createApiRouter(apiPath, !isProd));
 
   // --- Prepare static data for production ---
   const baseTemplatePath = isProd
