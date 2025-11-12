@@ -13,7 +13,7 @@ A TypeScript first, SSR capable, backend+frontend framework: a bare next.js.
 
 Dex.ts was designed after many iterations and technologies across a myriad of fast-paced startup projects.
 
-Its primary aim is to be just what you need to get deployed and executing as fast as possible, with minimal baggage.
+Its primary aim is to be just what you need to get deployed and executing as fast as possible, with minimal baggage. Convention over configuration, simple and focused, just enough to hit the core stuff that's a pain in the ass to roll yourself.
 
 ## Packages
 
