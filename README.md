@@ -18,6 +18,7 @@ Its primary aim is to be just what you need to get deployed and executing as fas
 ## Packages
 
 `dex.ts` - the framework
+
 `hn-demo` - the example application
 
 Eventually dex.ts will be published to npm.
