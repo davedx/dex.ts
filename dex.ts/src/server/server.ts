@@ -112,14 +112,18 @@ export async function createDexServer({ context = {} }: DexServerParams = {}) {
                 template
               );
 
-              const appHtml = await renderPage(Page);
+              const { appHtml, dataScript } = await renderPage(
+                mod,
+                context,
+                req.originalUrl
+              );
               html = template.replace(
                 /<div id="root">\s*<\/div>/,
                 `<div id="root">${appHtml}</div>`
               );
               html = html.replace(
                 "</body>",
-                `<script>window.__DEX_ROUTES__ = ${routesJson};</script></body>`
+                `${dataScript}<script>window.__DEX_ROUTES__ = ${routesJson};</script></body>`
               );
               break;
             } else {
@@ -163,16 +167,18 @@ export async function createDexServer({ context = {} }: DexServerParams = {}) {
 
         for (const abs of prodPages) {
           const route = fileToRoute2(abs);
+          let dataScriptOuter = "";
           if (route === urlPath) {
             const mod = await import(abs);
-            console.log("SSR check:", abs, Object.keys(mod), mod.ssr);
-
             matched = true;
 
             if (mod.ssr) {
-              const Page = mod.default;
-              const appHtml = await renderPage(Page);
-
+              const { appHtml, dataScript } = await renderPage(
+                mod,
+                context,
+                req.originalUrl
+              );
+              dataScriptOuter = dataScript;
               html = prodTemplate!.replace(
                 /<div id="root">\s*<\/div>/,
                 `<div id="root">${appHtml}</div>`
@@ -185,7 +191,7 @@ export async function createDexServer({ context = {} }: DexServerParams = {}) {
             // Inject routes data (for client navigation)
             html = html.replace(
               "</body>",
-              `<script>window.__DEX_ROUTES__ = ${routesJson};</script></body>`
+              `${dataScriptOuter}<script>window.__DEX_ROUTES__ = ${routesJson};</script></body>`
             );
             break;
           }

@@ -10,6 +10,7 @@ console.log("[routes] available:", ROUTES_LIST);
 declare global {
   interface Window {
     __SSR_HTML__?: boolean;
+    __DEX_DATA__?: unknown;
   }
 }
 
