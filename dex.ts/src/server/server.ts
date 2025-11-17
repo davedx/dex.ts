@@ -14,7 +14,11 @@ function normalizeRoutePath(route: string) {
   return route;
 }
 
-export async function createDexServer() {
+export type DexServerParams = {
+  context?: Record<string, any>;
+};
+
+export async function createDexServer({ context = {} }: DexServerParams = {}) {
   const app = express();
   app.use(express.json());
 
@@ -41,7 +45,7 @@ export async function createDexServer() {
   // --- Simple API example ---
   //  app.get("/api/hello", (_, res) => res.json({ ok: true }));
   const apiPath = path.resolve("./src/api");
-  app.use("/api", await createApiRouter(apiPath, !isProd));
+  app.use("/api", await createApiRouter(apiPath, { context }, !isProd));
 
   // --- Prepare static data for production ---
   const baseTemplatePath = isProd

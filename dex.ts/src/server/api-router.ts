@@ -39,7 +39,11 @@ function fileToRoute(file: string, apiDir: string): string {
 /**
  * Build an express.Router() from files in /api.
  */
-export async function createApiRouter(apiRoot: string, dev = false) {
+export async function createApiRouter(
+  apiRoot: string,
+  options: Record<string, any> = {},
+  dev = false
+) {
   const router = express.Router();
 
   if (!fs.existsSync(apiRoot)) {
@@ -62,6 +66,7 @@ export async function createApiRouter(apiRoot: string, dev = false) {
     const verbs = Object.keys(mod).filter((k) =>
       ["GET", "POST", "PUT", "PATCH", "DELETE"].includes(k.toUpperCase())
     );
+    const context = options.context || {};
 
     for (const verb of verbs) {
       const fn = methodMap[verb as keyof typeof methodMap];
@@ -72,7 +77,7 @@ export async function createApiRouter(apiRoot: string, dev = false) {
               ? await import(`${url.pathToFileURL(file).href}?t=${Date.now()}`)
               : mod;
             const handler = m[verb];
-            const result = await handler(req, res);
+            const result = await handler(context, req, res);
             if (result !== undefined && !res.headersSent) res.json(result);
           } catch (err) {
             next(err);

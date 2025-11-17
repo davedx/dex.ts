@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  username  String    @unique
+  email     String    @unique
+  password  String    // bcrypt hash
+  about     String    @default("")
+  createdAt DateTime  @default(now())
+
+  posts     Post[]
+  comments  Comment[]
+  votes     Vote[]
+  commentVotes CommentVote[]
+}
+
+model Post {
+  id          Int        @id @default(autoincrement())
+  title       String
+  url         String?    // optional external link
+  content     String?    // optional text post
+  createdAt   DateTime   @default(now())
+  author      User       @relation(fields: [authorId], references: [id])
+  authorId    Int
+
+  score       Int        @default(0)     // total upvotes - downvotes
+  hotRank     Float      @default(0)     // cached rank for sorting
+
+  comments    Comment[]
+  votes       Vote[]
+}
+
+model Comment {
+  id          Int        @id @default(autoincrement())
+  content     String
+  createdAt   DateTime   @default(now())
+  author      User       @relation(fields: [authorId], references: [id])
+  authorId    Int
+  post        Post       @relation(fields: [postId], references: [id])
+  postId      Int
+  parent      Comment?   @relation("CommentToComment", fields: [parentId], references: [id])
+  parentId    Int?
+  children    Comment[]  @relation("CommentToComment")
+
+  votes       CommentVote[]
+}
+
+model Vote {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    Int
+  value     Int      // +1 or -1
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId]) // one vote per user per post
+}
+
+model CommentVote {
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
+  comment     Comment  @relation(fields: [commentId], references: [id])
+  commentId   Int
+  value       Int      // +1 or -1
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, commentId])
+}
